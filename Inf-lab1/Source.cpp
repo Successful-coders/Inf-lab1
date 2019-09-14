@@ -55,17 +55,6 @@ int CharToInt(char letter)
 	}
 }
 
-int TranslateTo10(char *charArray, int arraySize, int systemBasis)
-{
-	int resultInt = 0;
-	for (int i = arraySize - 1, j = 0; i > 0; i--, j++)
-	{
-		resultInt += CharToInt(charArray[i]) * pow(systemBasis, j);
-	}
-
-	int resultInt;
-}
-
 char* Translate_RealPart_From10(int r, int Real)
 {
 	Stack stack1;
@@ -121,26 +110,68 @@ char* Translate_IntPart_From10(int r, int Integer)
 }
 
 
-void TranslateFrom10(int r)
+void TranslateFrom10()
 {
 	int realPart = 0, IntPart = 0;
+	int systemBasis;
 
-	fopen_s(&fileInput, "input.txt", "r");
-	fopen_s(&fileOutput, "output.txt", "w");
+	fopen_s(&fileInput, "input1.txt", "r");
+	fopen_s(&fileOutput, "output1.txt", "w");
+	fscanf(fileInput, "%d\n", &systemBasis);
 	while (!feof(fileInput))
 	{
-		//fscanf(fileInput, "%i,%i\n", &IntPart, &realPart);
-		//char *ret = Translate_IntPart_From10(r, IntPart);
-		//fprintf(fileOutput, "%s", (Translate_IntPart_From10(r, IntPart)));
+		fscanf(fileInput, "%i,%i\n", &IntPart, &realPart);
+		char *ret = Translate_IntPart_From10(systemBasis, IntPart);
+		fprintf(fileOutput, "%s", (Translate_IntPart_From10(systemBasis, IntPart)));
 
-		//if (realPart != 0)
-		//{
-		//	fprintf(fileOutput, ",%s", Translate_RealPart_From10(r, realPart));
-		//}
-		//fprintf(fileOutput, "\n");
+		if (realPart != 0)
+		{
+			fprintf(fileOutput, ",%s", Translate_RealPart_From10(systemBasis, realPart));
+		}
+		fprintf(fileOutput, "\n");
+	}
+	fclose(fileOutput);
+	fclose(fileInput);
+}
 
-		//TODO TranslateTo10()
 
+
+void TranslateTo10()
+{
+	char *intPart = new char;
+	char *fullNumber = new char;
+	string fullNumberString;
+	string realPart = "";
+	int systemBasis;
+	FILE *fileInput, *fileOutput;
+
+	fopen_s(&fileInput, "input2.txt", "r");
+	fopen_s(&fileOutput, "output2.txt", "w");
+	while (!feof(fileInput))
+	{
+		fscanf(fileInput, "%d %s", &systemBasis, fullNumber);
+		string fullNumberString = fullNumber;
+		int commaPosition = fullNumberString.find(',');
+		int lowerDegree = 0;
+		if (commaPosition != -1)//double
+		{
+			lowerDegree = commaPosition - fullNumberString.length() + 1;
+			fullNumberString.erase(commaPosition, 1);
+		}
+
+		double resultNumber = 0;
+		for (int i = fullNumberString.length() - 1, j = lowerDegree; i >= 0; i--, j++)
+		{
+			resultNumber += CharToInt(fullNumberString[i]) * pow(systemBasis, j);
+		}
+		if (lowerDegree < 0)
+		{
+			fprintf(fileOutput, "%f\n", resultNumber);
+		}
+		else
+		{
+			fprintf(fileOutput, "%d\n", (int)resultNumber);
+		}
 	}
 	fclose(fileOutput);
 	fclose(fileInput);
@@ -148,8 +179,6 @@ void TranslateFrom10(int r)
 
 int main()
 {
-	int r;
-	cout << "Enter number system: ";
-	cin >> r;
-	TranslateFrom10(r);
+	TranslateFrom10();
+	TranslateTo10();
 }
