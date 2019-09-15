@@ -43,6 +43,7 @@ char IntToChar(int number)
 		return number + '0';
 	}
 }
+
 int CharToInt(char letter)
 {
 	if (letter >= '0' && letter <= '9')
@@ -109,7 +110,6 @@ char* Translate_IntPart_From10(int r, int Integer)
 	return returnInt;
 }
 
-
 void TranslateFrom10()
 {
 	//FILE *fileInput, *fileOutput;
@@ -135,8 +135,6 @@ void TranslateFrom10()
 	} while (symbol != '/');
 
 }
-
-
 
 void TranslateTo10()
 {
@@ -175,6 +173,7 @@ void TranslateTo10()
 		}
 		symbol = fgetc(fileInput);
 	} while (symbol != '/');
+	//delete (intPart, fullNumber);
 }
 
 void Multiply()
@@ -183,8 +182,8 @@ void Multiply()
 
 	
 
-	char *fullNumber1 = new char [sizeof(char*)];
-	char *fullNumber2 = new char[sizeof(char*)];
+	char *fullNumber1 = new char;
+	char* fullNumber2 = new char;
 	int systemBasis;
 	unsigned char result[100];
 	char symbol;
@@ -251,6 +250,20 @@ void Multiply()
 		fprintf(fileOutputM, "%s\n", result);
 		symbol = fgetc(fileInput);
 	} while (symbol != '/');
+	//delete (fullNumber1, fullNumber2);
+
+}
+
+void Sum()
+{
+	int systemBasis;
+	unsigned char result[100];
+	char symbol;
+	do
+	{
+
+		symbol = fgetc(fileInput);
+	} while (symbol != '/');
 
 }
 
@@ -260,11 +273,9 @@ int main()
 	fopen_s(&fileOutput1, "output1.txt", "w");
 	fopen_s(&fileOutput2, "output2.txt", "w");
 	fopen_s(&fileOutputM, "outputMultiply.txt", "w");
+	
 	TranslateFrom10();
-
-
 	TranslateTo10();
-
 	Multiply();
 
 	fclose(fileInput);

@@ -120,7 +120,6 @@
   <ItemGroup>
     <Text Include="input1.txt" />
     <Text Include="input2.txt" />
-    <Text Include="inputMultiply.txt" />
     <Text Include="output1.txt" />
     <Text Include="output2.txt" />
     <Text Include="outputMultiply.txt" />
