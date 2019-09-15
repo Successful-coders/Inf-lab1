@@ -193,6 +193,7 @@ void Multiply()
 	{
 		fscanf(fileInput, "%d %s %s", &systemBasis, fullNumber1, fullNumber2);
 
+
 		string fullNumberString1 = fullNumber1;
 		int commaPosition1 = fullNumberString1.find(',');
 		int lowerDegree = 0;
