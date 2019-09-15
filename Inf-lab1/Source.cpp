@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <string>
-
+FILE* fileInput, * fileOutput1, *fileOutput2, *fileOutputM ;
 using namespace std;
 
 struct Stack {
@@ -112,43 +112,43 @@ char* Translate_IntPart_From10(int r, int Integer)
 
 void TranslateFrom10()
 {
-	FILE *fileInput, *fileOutput;
+	//FILE *fileInput, *fileOutput;
 	int realPart = 0, IntPart = 0;
 	int systemBasis;
 
-	fopen_s(&fileInput, "input1.txt", "r");
-	fopen_s(&fileOutput, "output1.txt", "w");
+
 	fscanf(fileInput, "%d\n", &systemBasis);
-	while (!feof(fileInput))
+	char symbol;
+
+	do
 	{
 		fscanf(fileInput, "%i,%i\n", &IntPart, &realPart);
 		char *ret = Translate_IntPart_From10(systemBasis, IntPart);
-		fprintf(fileOutput, "%s", (Translate_IntPart_From10(systemBasis, IntPart)));
+		fprintf(fileOutput1, "%s", (Translate_IntPart_From10(systemBasis, IntPart)));
 
 		if (realPart != 0)
 		{
-			fprintf(fileOutput, ",%s", Translate_RealPart_From10(systemBasis, realPart));
+			fprintf(fileOutput1, ",%s", Translate_RealPart_From10(systemBasis, realPart));
 		}
-		fprintf(fileOutput, "\n");
-	}
-	fclose(fileOutput);
-	fclose(fileInput);
+		fprintf(fileOutput1, "\n");
+		symbol = fgetc(fileInput);
+	} while (symbol != '/');
+
 }
 
 
 
 void TranslateTo10()
 {
-	char *intPart = new char;
-	char *fullNumber = new char;
+	char* intPart = new char;
+	char* fullNumber = new char;
 	string fullNumberString;
 	string realPart = "";
 	int systemBasis;
-	FILE *fileInput, *fileOutput;
 
-	fopen_s(&fileInput, "input2.txt", "r");
-	fopen_s(&fileOutput, "output2.txt", "w");
-	while (!feof(fileInput))
+	char symbol;
+
+	do
 	{
 		fscanf(fileInput, "%d %s", &systemBasis, fullNumber);
 		string fullNumberString = fullNumber;
@@ -167,29 +167,29 @@ void TranslateTo10()
 		}
 		if (lowerDegree < 0)
 		{
-			fprintf(fileOutput, "%f\n", resultNumber);
+			fprintf(fileOutput2, "%f\n", resultNumber);
 		}
 		else
 		{
-			fprintf(fileOutput, "%d\n", (int)resultNumber);
+			fprintf(fileOutput2, "%d\n", (int)resultNumber);
 		}
-	}
-	fclose(fileInput);
-	fclose(fileOutput);
+		symbol = fgetc(fileInput);
+	} while (symbol != '/');
 }
 
 void Multiply()
 {
-	FILE *fileInput, *fileOutput;
+//	FILE *fileInput, *fileOutput;
 
-	fopen_s(&fileInput, "inputMultiply.txt", "r");
-	fopen_s(&fileOutput, "outputMultiply.txt", "w");
+	
 
-	char *fullNumber1 = new char;
-	char *fullNumber2 = new char;
+	char *fullNumber1 = new char [sizeof(char*)];
+	char *fullNumber2 = new char[sizeof(char*)];
 	int systemBasis;
 	unsigned char result[100];
-	while (!feof(fileInput))
+	char symbol;
+
+	do
 	{
 		fscanf(fileInput, "%d %s %s", &systemBasis, fullNumber1, fullNumber2);
 
@@ -247,16 +247,27 @@ void Multiply()
 			result[length1 + length2 + lowerDegree] = ',';
 		}
 
-		fprintf(fileOutput, "%s\n", result);
-	}
+		fprintf(fileOutputM, "%s\n", result);
+		symbol = fgetc(fileInput);
+	} while (symbol != '/');
 
-	fclose(fileInput);
-	fclose(fileOutput);
 }
 
 int main()
 {
+	fopen_s(&fileInput, "input1.txt", "r");
+	fopen_s(&fileOutput1, "output1.txt", "w");
+	fopen_s(&fileOutput2, "output2.txt", "w");
+	fopen_s(&fileOutputM, "outputMyltiply.txt", "w");
 	TranslateFrom10();
+
+
 	TranslateTo10();
+
 	Multiply();
+
+	fclose(fileInput);
+	fclose(fileOutput1);
+	fclose(fileOutput2);
+	fclose(fileOutputM);
 }
