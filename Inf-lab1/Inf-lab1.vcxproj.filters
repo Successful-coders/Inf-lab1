@@ -32,5 +32,11 @@
     <Text Include="output2.txt">
       <Filter>Файлы ресурсов</Filter>
     </Text>
+    <Text Include="inputMultiply.txt">
+      <Filter>Файлы ресурсов</Filter>
+    </Text>
+    <Text Include="outputMultiply.txt">
+      <Filter>Файлы ресурсов</Filter>
+    </Text>
   </ItemGroup>
 </Project>

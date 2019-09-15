@@ -6,7 +6,7 @@
 #include <string>
 
 using namespace std;
-FILE *fileInput, *fileOutput;
+
 struct Stack {
 	char data[200];
 	int size = 0;
@@ -112,6 +112,7 @@ char* Translate_IntPart_From10(int r, int Integer)
 
 void TranslateFrom10()
 {
+	FILE *fileInput, *fileOutput;
 	int realPart = 0, IntPart = 0;
 	int systemBasis;
 
@@ -173,12 +174,89 @@ void TranslateTo10()
 			fprintf(fileOutput, "%d\n", (int)resultNumber);
 		}
 	}
-	fclose(fileOutput);
 	fclose(fileInput);
+	fclose(fileOutput);
+}
+
+void Multiply()
+{
+	FILE *fileInput, *fileOutput;
+
+	fopen_s(&fileInput, "inputMultiply.txt", "r");
+	fopen_s(&fileOutput, "outputMultiply.txt", "w");
+
+	char *fullNumber1 = new char;
+	char *fullNumber2 = new char;
+	int systemBasis;
+	unsigned char result[100];
+	while (!feof(fileInput))
+	{
+		fscanf(fileInput, "%d %s %s", &systemBasis, fullNumber1, fullNumber2);
+
+		string fullNumberString1 = fullNumber1;
+		int commaPosition1 = fullNumberString1.find(',');
+		int lowerDegree = 0;
+		if (commaPosition1 != -1)//double
+		{
+			lowerDegree += commaPosition1 - fullNumberString1.length() + 1;
+			fullNumberString1.erase(commaPosition1, 1);
+		}
+
+		string fullNumberString2 = fullNumber2;
+		int commaPosition2 = fullNumberString2.find(',');
+		if (commaPosition2 != -1)//double
+		{
+			lowerDegree += commaPosition2 - fullNumberString2.length() + 1;
+			fullNumberString2.erase(commaPosition2, 1);
+		}
+
+
+		int length1 = fullNumberString1.length();
+
+		int length2 = fullNumberString2.length();
+
+		for (int i = 0; i < length1 + length2; i++)
+		{
+			result[i] = 0;
+		}
+		for (int i = length2 - 1; i >= 0; i--)
+		{
+			for (int j = length1 - 1; j >= 0; j--)
+			{
+				result[j + i + 1] += (char)(CharToInt(fullNumberString1[j]) * CharToInt(fullNumberString2[i]));
+				if (result[j + i + 1] > systemBasis - 1) {
+					result[i + j] += result[j + i + 1] / systemBasis;
+					result[j + i + 1] %= systemBasis;
+				}
+
+			}		
+			result[length1 + i] = IntToChar(result[length1 + i]);
+		}
+		result[length1 + length2] = '\0';
+		for (int i = 0; i < length1; i++)
+		{
+			result[i] = IntToChar(result[i]);
+		}
+			   
+		if (lowerDegree != 0)
+		{
+			for (int i = length1 + length2; i >= length1 + length2 + lowerDegree; i--)
+			{
+				result[i + 1] = result[i];
+			}
+			result[length1 + length2 + lowerDegree] = ',';
+		}
+
+		fprintf(fileOutput, "%s\n", result);
+	}
+
+	fclose(fileInput);
+	fclose(fileOutput);
 }
 
 int main()
 {
 	TranslateFrom10();
 	TranslateTo10();
+	Multiply();
 }
