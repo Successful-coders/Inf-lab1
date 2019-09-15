@@ -262,7 +262,6 @@ int main()
 	fopen_s(&fileOutputM, "outputMultiply.txt", "w");
 	TranslateFrom10();
 
-
 	TranslateTo10();
 
 	Multiply();
