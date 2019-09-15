@@ -259,7 +259,7 @@ int main()
 	fopen_s(&fileInput, "input1.txt", "r");
 	fopen_s(&fileOutput1, "output1.txt", "w");
 	fopen_s(&fileOutput2, "output2.txt", "w");
-	fopen_s(&fileOutputM, "outputMyltiply.txt", "w");
+	fopen_s(&fileOutputM, "outputMultiply.txt", "w");
 	TranslateFrom10();
 
 
