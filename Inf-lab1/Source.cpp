@@ -7,6 +7,8 @@
 
 using namespace std;
 
+FILE *fileInput, *fileOutput;
+
 struct Stack {
 	char data[200];
 	int size = 0;
@@ -112,7 +114,6 @@ char* Translate_IntPart_From10(int r, int Integer)
 
 void TranslateFrom10()
 {
-	FILE *fileInput, *fileOutput;
 	int realPart = 0, IntPart = 0;
 	int systemBasis;
 
@@ -144,7 +145,6 @@ void TranslateTo10()
 	string fullNumberString;
 	string realPart = "";
 	int systemBasis;
-	FILE *fileInput, *fileOutput;
 
 	fopen_s(&fileInput, "input2.txt", "r");
 	fopen_s(&fileOutput, "output2.txt", "w");
@@ -180,15 +180,13 @@ void TranslateTo10()
 
 void Multiply()
 {
-	FILE *fileInput, *fileOutput;
-
 	fopen_s(&fileInput, "inputMultiply.txt", "r");
 	fopen_s(&fileOutput, "outputMultiply.txt", "w");
 
 	char *fullNumber1 = new char;
 	char *fullNumber2 = new char;
 	int systemBasis;
-	unsigned char result[100];
+	unsigned char *result = new unsigned char;
 	while (!feof(fileInput))
 	{
 		fscanf(fileInput, "%d %s %s", &systemBasis, fullNumber1, fullNumber2);
