@@ -114,10 +114,10 @@ double *TranslateFrom10(int systemBasis, int realPart, int IntPart)
 	int i = 0;
 	returnValue[i] = Translate_IntPart_From10(systemBasis, IntPart);
 
-	/*if (realPart != 0)
+	if (realPart != 0)
 	{
 		returnValue += "," + Translate_RealPart_From10(systemBasis, realPart);
-	}*/
+	}
 
 	return returnValue;
 }
