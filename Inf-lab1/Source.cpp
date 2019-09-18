@@ -19,7 +19,7 @@ void push(Stack* stack, const char value)
 
 }
 
-char pop(Stack* stack) {
+int pop(Stack* stack) {
 	if (stack->size == 0) {
 		exit(0);
 	}
@@ -56,7 +56,7 @@ int CharToInt(char letter)
 	}
 }
 
-string Translate_RealPart_From10(int r, int Real)
+double *Translate_RealPart_From10(int r, int Real)
 {
 	Stack stack1;
 	double  realPart, s = 10.0, real, mod;
@@ -70,7 +70,7 @@ string Translate_RealPart_From10(int r, int Real)
 	realPart = (double)Real / s;
 
 	modf((double)(realPart * r), &real);
-	string returnReal = "";
+	double returnReal[5];
 	int i = 0;
 	while (real != 0)
 	{
@@ -84,7 +84,7 @@ string Translate_RealPart_From10(int r, int Real)
 	return returnReal;
 }
 
-string Translate_IntPart_From10(int r, int Integer)
+char *Translate_IntPart_From10(int r, int Integer)
 {
 	Stack stack;
 	int intPart, residue;
@@ -97,7 +97,7 @@ string Translate_IntPart_From10(int r, int Integer)
 	} while (intPart != 0);
 
 	int stackSize = stack.size;
-	string returnInt = "";
+	char returnInt[50];
 	int i = 0;
 	while (!IsEmpty(stack))
 	{
@@ -108,14 +108,16 @@ string Translate_IntPart_From10(int r, int Integer)
 	return returnInt;
 }
 
-string TranslateFrom10(int systemBasis, int realPart, int IntPart)
+double *TranslateFrom10(int systemBasis, int realPart, int IntPart)
 {
-	string returnValue = Translate_IntPart_From10(systemBasis, IntPart);
+	char returnValue[2];
+	int i = 0;
+	returnValue[i] = Translate_IntPart_From10(systemBasis, IntPart);
 
-	if (realPart != 0)
+	/*if (realPart != 0)
 	{
 		returnValue += "," + Translate_RealPart_From10(systemBasis, realPart);
-	}
+	}*/
 
 	return returnValue;
 }
@@ -203,7 +205,7 @@ double Sum(int systembasis, string fullNumberSum1, string fullNumberSum2)
 	double number1 = TranslateTo10(systembasis, fullNumberSum1);
 	double number2 = TranslateTo10(systembasis, fullNumberSum2);
 	result = number1 + number2;
-	TranslateFrom10(systembasis, result);
+	//TranslateFrom10(systembasis, result);
 	return result;
 }
 
@@ -219,11 +221,12 @@ int main()
 	do
 	{
 		fscanf(fileInput, "%i,%i\n", &intPart, &realPart);
-		fprintf(fileOutput1, "%s", TranslateFrom10(systembasis, intPart, realPart).c_str());
+		double result = TranslateFrom10(systembasis, intPart, realPart);
+		//fprintf(fileOutput1, "%s", TranslateFrom10(systembasis, intPart, realPart).c_str());
 		symbol = fgetc(fileInput);
 	} while (symbol != '/');
 
-	string fullNumber;
+	/*string fullNumber;
 	do
 	{
 		fscanf(fileInput, "%d %s", &systembasis, &fullNumber);
@@ -248,7 +251,7 @@ int main()
 		fprintf(fileOutput1, "%s", Sum(systembasis, fullNumberSum1, fullNumberSum2));
 		symbol = fgetc(fileInput);
 	} while (symbol != '/');
-
+*/
 	fclose(fileInput);
 	fclose(fileOutput1);
 	fclose(fileOutput2);
