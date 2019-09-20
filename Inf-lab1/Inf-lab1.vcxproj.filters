@@ -29,9 +29,6 @@
     <Text Include="output2.txt">
       <Filter>Файлы ресурсов</Filter>
     </Text>
-    <Text Include="inputM.txt">
-      <Filter>Файлы ресурсов</Filter>
-    </Text>
     <Text Include="input2.txt">
       <Filter>Файлы ресурсов</Filter>
     </Text>

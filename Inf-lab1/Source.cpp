@@ -56,27 +56,32 @@ int CharToInt(char letter)
 	}
 }
 
-string Translate_RealPart_From10(int r, int Real)
+string Translate_RealPart_From10(int r, int real)
 {
-	Stack stack1;
-	double  realPart, s = 10.0, real, mod;
-	int intPart = Real, count = 0;
+	double  realPart, mod;
+	int intPart = real, count = 0;
 
 	while (intPart != 0) {
 		intPart /= 10;
 		count++;
 	}
-	s = pow((double)s, count);
-	realPart = (double)Real / s;
 
-	modf((double)(realPart * r), &real);
+	realPart = (double)real / pow(10.0, count);;
+
+	int i = 0;
 	string returnReal;
-	while (real != 0)
+	mod = realPart;
+	while (i != 5)
 	{
-		mod = realPart * r;
-		realPart = mod - real;
-		returnReal += IntToChar(mod);
-		modf((double)(realPart * r), &real);
+		mod = mod * r;
+		int intPart = mod;
+		if (intPart != 0)
+		{
+			mod = modf(mod, &realPart);
+		}
+
+		returnReal += to_string(intPart);
+		i++;
 	}
 
 	return returnReal;
@@ -133,7 +138,7 @@ double TranslateTo10(int systemBasis, string fullNumber)
 	return resultNumber;
 }
 
-unsigned char* Multiply(int systemBasis, string fullNumber1, string fullNumber2)
+string Multiply(int systemBasis, string fullNumber1, string fullNumber2)
 {
 	unsigned char result[100];
 
@@ -189,85 +194,81 @@ unsigned char* Multiply(int systemBasis, string fullNumber1, string fullNumber2)
 		result[length1 + length2 + lowerDegree] = ',';
 	}
 
-	return result;
+	string resultS(reinterpret_cast<char*>(result), sizeof(result));
+	return resultS;
 }
 
-double Sum(int systembasis, string fullNumberSum1, string fullNumberSum2)
+string Sum(int systemBasis, string fullNumberSum1, string fullNumberSum2)
 {
-	double result;
-	double number1 = TranslateTo10(systembasis, fullNumberSum1);
-	double number2 = TranslateTo10(systembasis, fullNumberSum2);
-	result = number1 + number2;
-	//TranslateFrom10(systembasis, result);
+	double resultDouble = TranslateTo10(systemBasis, fullNumberSum1) + TranslateTo10(systemBasis, fullNumberSum2);
+	int intPart = (int)resultDouble;
+	int realPart = (int)(resultDouble * 1000000) - (intPart * 1000000);
+	string result = TranslateFrom10(systemBasis, intPart, realPart);
+
 	return result;
 }
 
 int main()
 {
-	int systembasis, intPart, realPart = 0;
+	int systemBasis, intPart, realPart = 0;
 
 	FILE* fileInput1;
 	fopen_s(&fileInput1, "input1.txt", "r");
 	fopen_s(&fileOutput1, "output1.txt", "w");
-	fscanf(fileInput1, "%i", &systembasis);
+	fscanf(fileInput1, "%i", &systemBasis);
 	while (!feof(fileInput1))
 	{
 		fscanf(fileInput1, "%i,%i\n", &intPart, &realPart);
 
-		fprintf(fileOutput1, "%s\n", TranslateFrom10(systembasis, intPart, realPart).c_str());
+		fprintf(fileOutput1, "%s\n", TranslateFrom10(systemBasis, intPart, realPart).c_str());
 	}
 	fclose(fileInput1);
 	fclose(fileOutput1);
 
-	char *fullNumber = new char;
+	char *fullNumber = new char[256];
 	fopen_s(&fileInput2, "input2.txt", "r");
 	fopen_s(&fileOutput2, "output2.txt", "w");
 	while (!feof(fileInput2))
 	{
-		fscanf(fileInput2, "%d %s", &systembasis, fullNumber);
+		fscanf(fileInput2, "%d %s", &systemBasis, fullNumber);
 
 		string fullnumberS(fullNumber);
-		fprintf(fileOutput2, "%f\n", TranslateTo10(systembasis, fullnumberS));
+		fprintf(fileOutput2, "%f\n", TranslateTo10(systemBasis, fullnumberS));
 	} 
 	fclose(fileInput2);
 	fclose(fileOutput2);
 
 
-	char* fullNumber2 = new char;
+	char* fullNumber2 = new char[256];
 	fopen_s(&fileInput3, "input3.txt", "r");
 	fopen_s(&fileOutput3, "output3.txt", "w");
 	while (!feof(fileInput3))
 	{
-		fscanf(fileInput3, "%d %s %s", &systembasis, fullNumber, fullNumber2);
-
+		fscanf(fileInput3, "%d %s %s", &systemBasis, fullNumber, fullNumber2);
 
 		string fullnumberS(fullNumber);
 		string fullnumberS2(fullNumber2);
-		string result(reinterpret_cast<char*>(Multiply(systembasis, fullnumberS, fullnumberS2)));
+		string result = Multiply(systemBasis, fullnumberS, fullnumberS2);
 
-		//fprintf(fileOutput3, "%s", result.c_str());
-		fprintf(fileOutput3, "%s", Multiply(systembasis, fullnumberS, fullnumberS2));
+		fprintf(fileOutput3, "%s\n", result.c_str());
 	}
 	fclose(fileInput3);
 	fclose(fileOutput3);
 
-	//string fullNumber1, fullNumber2;
-	//fopen_s(&fileOutput2, "output2.txt", "w");
-	//do
-	//{
-	//	fscanf(fileInput, "%d %s %s", &systembasis, fullNumber1, fullNumber2);
-	//	fprintf(fileOutput1, "%s", Multiply(systembasis, fullNumber1, fullNumber2));
-	//	symbol = fgetc(fileInput);
-	//} while (symbol != '/');
 
-	//string fullNumberSum1, fullNumberSum2;
-	//fopen_s(&fileOutputM, "outputMultiply.txt", "w");
-	//do
-	//{
-	//	fscanf(fileInput, "%d %s %s", &systembasis, fullNumberSum1, fullNumberSum2);
-	//	fprintf(fileOutput1, "%s", Sum(systembasis, fullNumberSum1, fullNumberSum2));
-	//	symbol = fgetc(fileInput);
-	//} while (symbol != '/');
+	fopen_s(&fileInput4, "input4.txt", "r");
+	fopen_s(&fileOutput4, "output4.txt", "w");
+	while (!feof(fileInput4))
+	{
+		fscanf(fileInput4, "%d %s %s", &systemBasis, fullNumber, fullNumber2);
 
-	//fclose(fileOutputM);
+		string fullnumberS(fullNumber);
+		string fullnumberS2(fullNumber2);
+
+		string result = Sum(systemBasis, fullnumberS, fullnumberS2);
+
+		fprintf(fileOutput4, "%s\n", result.c_str());
+	}
+	fclose(fileInput4);
+	fclose(fileOutput4);
 }
