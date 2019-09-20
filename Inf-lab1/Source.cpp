@@ -1,10 +1,10 @@
 #define _CRT_SECURE_NO_WARNINGS
-#include <iostream>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <string>
-FILE* fileInput, * fileOutput1, *fileOutput2, *fileOutputM ;
+FILE* fileInput1, * fileInput2, * fileInput3, * fileInput4, * fileOutput1, * fileOutput2, * fileOutput3, * fileOutput4;
 using namespace std;
 
 struct Stack {
@@ -56,7 +56,7 @@ int CharToInt(char letter)
 	}
 }
 
-char* Translate_RealPart_From10(int r, int Real)
+string Translate_RealPart_From10(int r, int Real)
 {
 	Stack stack1;
 	double  realPart, s = 10.0, real, mod;
@@ -70,22 +70,18 @@ char* Translate_RealPart_From10(int r, int Real)
 	realPart = (double)Real / s;
 
 	modf((double)(realPart * r), &real);
-	char *returnReal = new char[5];
-	int i = 0;
+	string returnReal;
 	while (real != 0)
 	{
 		mod = realPart * r;
 		realPart = mod - real;
-		returnReal[i] = IntToChar(mod);
+		returnReal += IntToChar(mod);
 		modf((double)(realPart * r), &real);
-		i++;
 	}
-	returnReal[i] = '\0';
+
 	return returnReal;
-
 }
-
-char* Translate_IntPart_From10(int r, int Integer)
+string Translate_IntPart_From10(int r, int Integer)
 {
 	Stack stack;
 	int intPart, residue;
@@ -98,188 +94,180 @@ char* Translate_IntPart_From10(int r, int Integer)
 	} while (intPart != 0);
 
 	int stackSize = stack.size;
-	char *returnInt = new char[stackSize];
-	int i = 0;
+	string returnInt;
+
 	while (!IsEmpty(stack))
 	{
-		returnInt[i] = pop(&stack);
-		i++;
+		returnInt += pop(&stack);
 	}
 
-	returnInt[i] = '\0';
 	return returnInt;
 }
-
-void TranslateFrom10()
+string TranslateFrom10(int systemBasis, int IntPart, int realPart)
 {
-	//FILE *fileInput, *fileOutput;
-	int realPart = 0, IntPart = 0;
-	int systemBasis;
+	string returnValue = Translate_IntPart_From10(systemBasis, IntPart);
 
-
-	fscanf(fileInput, "%d\n", &systemBasis);
-	char symbol;
-
-	do
+	if (realPart != 0)
 	{
-		fscanf(fileInput, "%i,%i\n", &IntPart, &realPart);
-		char *ret = Translate_IntPart_From10(systemBasis, IntPart);
-		fprintf(fileOutput1, "%s", (Translate_IntPart_From10(systemBasis, IntPart)));
+		returnValue += "," + Translate_RealPart_From10(systemBasis, realPart);
+	}
 
-		if (realPart != 0)
-		{
-			fprintf(fileOutput1, ",%s", Translate_RealPart_From10(systemBasis, realPart));
-		}
-		fprintf(fileOutput1, "\n");
-		symbol = fgetc(fileInput);
-	} while (symbol != '/');
-
+	return returnValue;
 }
 
-void TranslateTo10()
+double TranslateTo10(int systemBasis, string fullNumber)
 {
-	char* intPart = new char;
-	char* fullNumber = new char;
-	string fullNumberString;
-	string realPart = "";
-	int systemBasis;
-
-	char symbol;
-
-	do
+	int commaPosition = fullNumber.find(',');
+	int lowerDegree = 0;
+	if (commaPosition != -1)//double
 	{
-		fscanf(fileInput, "%d %s", &systemBasis, fullNumber);
-		string fullNumberString = fullNumber;
-		int commaPosition = fullNumberString.find(',');
-		int lowerDegree = 0;
-		if (commaPosition != -1)//double
-		{
-			lowerDegree = commaPosition - fullNumberString.length() + 1;
-			fullNumberString.erase(commaPosition, 1);
-		}
+		lowerDegree = commaPosition - fullNumber.length() + 1;
+		fullNumber.erase(commaPosition, 1);
+	}
 
-		double resultNumber = 0;
-		for (int i = fullNumberString.length() - 1, j = lowerDegree; i >= 0; i--, j++)
-		{
-			resultNumber += CharToInt(fullNumberString[i]) * pow(systemBasis, j);
-		}
-		if (lowerDegree < 0)
-		{
-			fprintf(fileOutput2, "%f\n", resultNumber);
-		}
-		else
-		{
-			fprintf(fileOutput2, "%d\n", (int)resultNumber);
-		}
-		symbol = fgetc(fileInput);
-	} while (symbol != '/');
-	//delete (intPart, fullNumber);
+	double resultNumber = 0;
+	for (int i = fullNumber.length() - 1, j = lowerDegree; i >= 0; i--, j++)
+	{
+		resultNumber += CharToInt(fullNumber[i]) * pow(systemBasis, j);
+	}
+	return resultNumber;
 }
 
-void Multiply()
+unsigned char* Multiply(int systemBasis, string fullNumber1, string fullNumber2)
 {
-//	FILE *fileInput, *fileOutput;
-
-	
-
-	char *fullNumber1 = new char;
-	char* fullNumber2 = new char;
-	int systemBasis;
 	unsigned char result[100];
-	char symbol;
 
-	do
+	int commaPosition1 = fullNumber1.find(',');
+	int lowerDegree = 0;
+	if (commaPosition1 != -1)//double
 	{
-		fscanf(fileInput, "%d %s %s", &systemBasis, fullNumber1, fullNumber2);
+		lowerDegree += commaPosition1 - fullNumber1.length() + 1;
+		fullNumber1.erase(commaPosition1, 1);
+	}
+
+	int commaPosition2 = fullNumber2.find(',');
+	if (commaPosition2 != -1)//double
+	{
+		lowerDegree += commaPosition2 - fullNumber2.length() + 1;
+		fullNumber2.erase(commaPosition2, 1);
+	}
 
 
-		string fullNumberString1 = fullNumber1;
-		int commaPosition1 = fullNumberString1.find(',');
-		int lowerDegree = 0;
-		if (commaPosition1 != -1)//double
+	int length1 = fullNumber1.length();
+
+	int length2 = fullNumber2.length();
+
+	for (int i = 0; i < length1 + length2; i++)
+	{
+		result[i] = 0;
+	}
+	for (int i = length2 - 1; i >= 0; i--)
+	{
+		for (int j = length1 - 1; j >= 0; j--)
 		{
-			lowerDegree += commaPosition1 - fullNumberString1.length() + 1;
-			fullNumberString1.erase(commaPosition1, 1);
-		}
-
-		string fullNumberString2 = fullNumber2;
-		int commaPosition2 = fullNumberString2.find(',');
-		if (commaPosition2 != -1)//double
-		{
-			lowerDegree += commaPosition2 - fullNumberString2.length() + 1;
-			fullNumberString2.erase(commaPosition2, 1);
-		}
-
-
-		int length1 = fullNumberString1.length();
-
-		int length2 = fullNumberString2.length();
-
-		for (int i = 0; i < length1 + length2; i++)
-		{
-			result[i] = 0;
-		}
-		for (int i = length2 - 1; i >= 0; i--)
-		{
-			for (int j = length1 - 1; j >= 0; j--)
-			{
-				result[j + i + 1] += (char)(CharToInt(fullNumberString1[j]) * CharToInt(fullNumberString2[i]));
-				if (result[j + i + 1] > systemBasis - 1) {
-					result[i + j] += result[j + i + 1] / systemBasis;
-					result[j + i + 1] %= systemBasis;
-				}
-
-			}		
-			result[length1 + i] = IntToChar(result[length1 + i]);
-		}
-		result[length1 + length2] = '\0';
-		for (int i = 0; i < length1; i++)
-		{
-			result[i] = IntToChar(result[i]);
-		}
-			   
-		if (lowerDegree != 0)
-		{
-			for (int i = length1 + length2; i >= length1 + length2 + lowerDegree; i--)
-			{
-				result[i + 1] = result[i];
+			result[j + i + 1] += (char)(CharToInt(fullNumber1[j]) * CharToInt(fullNumber2[i]));
+			if (result[j + i + 1] > systemBasis - 1) {
+				result[i + j] += result[j + i + 1] / systemBasis;
+				result[j + i + 1] %= systemBasis;
 			}
-			result[length1 + length2 + lowerDegree] = ',';
+
 		}
+		result[length1 + i] = IntToChar(result[length1 + i]);
+	}
+	result[length1 + length2] = '\0';
+	for (int i = 0; i < length1; i++)
+	{
+		result[i] = IntToChar(result[i]);
+	}
 
-		fprintf(fileOutputM, "%s\n", result);
-		symbol = fgetc(fileInput);
-	} while (symbol != '/');
-	//delete (fullNumber1, fullNumber2);
+	if (lowerDegree != 0)
+	{
+		for (int i = length1 + length2; i >= length1 + length2 + lowerDegree; i--)
+		{
+			result[i + 1] = result[i];
+		}
+		result[length1 + length2 + lowerDegree] = ',';
+	}
 
+	return result;
 }
 
-void Sum()
+double Sum(int systembasis, string fullNumberSum1, string fullNumberSum2)
 {
-	int systemBasis;
-	unsigned char result[100];
-	char symbol;
-	do
-	{
-
-		symbol = fgetc(fileInput);
-	} while (symbol != '/');
-
+	double result;
+	double number1 = TranslateTo10(systembasis, fullNumberSum1);
+	double number2 = TranslateTo10(systembasis, fullNumberSum2);
+	result = number1 + number2;
+	//TranslateFrom10(systembasis, result);
+	return result;
 }
 
 int main()
 {
-	fopen_s(&fileInput, "input1.txt", "r");
-	fopen_s(&fileOutput1, "output1.txt", "w");
-	fopen_s(&fileOutput2, "output2.txt", "w");
-	fopen_s(&fileOutputM, "outputMultiply.txt", "w");
-	
-	TranslateFrom10();
-	TranslateTo10();
-	Multiply();
+	int systembasis, intPart, realPart = 0;
 
-	fclose(fileInput);
+	FILE* fileInput1;
+	fopen_s(&fileInput1, "input1.txt", "r");
+	fopen_s(&fileOutput1, "output1.txt", "w");
+	fscanf(fileInput1, "%i", &systembasis);
+	while (!feof(fileInput1))
+	{
+		fscanf(fileInput1, "%i,%i\n", &intPart, &realPart);
+
+		fprintf(fileOutput1, "%s\n", TranslateFrom10(systembasis, intPart, realPart).c_str());
+	}
+	fclose(fileInput1);
 	fclose(fileOutput1);
+
+	char *fullNumber = new char;
+	fopen_s(&fileInput2, "input2.txt", "r");
+	fopen_s(&fileOutput2, "output2.txt", "w");
+	while (!feof(fileInput2))
+	{
+		fscanf(fileInput2, "%d %s", &systembasis, fullNumber);
+
+		string fullnumberS(fullNumber);
+		fprintf(fileOutput2, "%f\n", TranslateTo10(systembasis, fullnumberS));
+	} 
+	fclose(fileInput2);
 	fclose(fileOutput2);
-	fclose(fileOutputM);
+
+
+	char* fullNumber2 = new char;
+	fopen_s(&fileInput3, "input3.txt", "r");
+	fopen_s(&fileOutput3, "output3.txt", "w");
+	while (!feof(fileInput3))
+	{
+		fscanf(fileInput3, "%d %s %s", &systembasis, fullNumber, fullNumber2);
+
+
+		string fullnumberS(fullNumber);
+		string fullnumberS2(fullNumber2);
+		string result(reinterpret_cast<char*>(Multiply(systembasis, fullnumberS, fullnumberS2)));
+
+		//fprintf(fileOutput3, "%s", result.c_str());
+		fprintf(fileOutput3, "%s", Multiply(systembasis, fullnumberS, fullnumberS2));
+	}
+	fclose(fileInput3);
+	fclose(fileOutput3);
+
+	//string fullNumber1, fullNumber2;
+	//fopen_s(&fileOutput2, "output2.txt", "w");
+	//do
+	//{
+	//	fscanf(fileInput, "%d %s %s", &systembasis, fullNumber1, fullNumber2);
+	//	fprintf(fileOutput1, "%s", Multiply(systembasis, fullNumber1, fullNumber2));
+	//	symbol = fgetc(fileInput);
+	//} while (symbol != '/');
+
+	//string fullNumberSum1, fullNumberSum2;
+	//fopen_s(&fileOutputM, "outputMultiply.txt", "w");
+	//do
+	//{
+	//	fscanf(fileInput, "%d %s %s", &systembasis, fullNumberSum1, fullNumberSum2);
+	//	fprintf(fileOutput1, "%s", Sum(systembasis, fullNumberSum1, fullNumberSum2));
+	//	symbol = fgetc(fileInput);
+	//} while (symbol != '/');
+
+	//fclose(fileOutputM);
 }
