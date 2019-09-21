@@ -26,13 +26,22 @@
     <Text Include="output1.txt">
       <Filter>Файлы ресурсов</Filter>
     </Text>
-    <Text Include="input2.txt">
-      <Filter>Файлы ресурсов</Filter>
-    </Text>
     <Text Include="output2.txt">
       <Filter>Файлы ресурсов</Filter>
     </Text>
-    <Text Include="outputMultiply.txt">
+    <Text Include="input2.txt">
+      <Filter>Файлы ресурсов</Filter>
+    </Text>
+    <Text Include="input3.txt">
+      <Filter>Файлы ресурсов</Filter>
+    </Text>
+    <Text Include="input4.txt">
+      <Filter>Файлы ресурсов</Filter>
+    </Text>
+    <Text Include="output3.txt">
+      <Filter>Файлы ресурсов</Filter>
+    </Text>
+    <Text Include="output4.txt">
       <Filter>Файлы ресурсов</Filter>
     </Text>
   </ItemGroup>
